@@ -6,7 +6,7 @@
     "start": "node ./server.js",
     "test": "jest tests/app.test.js",
     "format": "prettier '**/*.{js,scss,css,html,md}' --write",
-    "format:check": "prettier '**/*.{js,scss,css,html,md}' --check .",
+    "format:check": "prettier '**/*.{js,scss,css,html,md}' --check",
     "lint": "eslint . --fix --ext .js",
     "lint:check": "eslint . --ext .js"
   },
