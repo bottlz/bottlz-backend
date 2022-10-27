@@ -39,14 +39,15 @@ class BottlesDao {
 
   async addItem(item) {
     debug("Adding an item to the database");
-    item.date = Date.now();
-    item.completed = false;
-    const { resource: doc } = await this.container.items.create(item);
-    return doc;
+    item.created = Date.now();
+    const {
+      resource: { id, origin, routes },
+    } = await this.container.items.create(item);
+    return { id, origin, routes };
   }
 
   async updateItem(itemId) {
-    debug("Update an item in the database");
+    debug("Updating an item in the database");
     const doc = await this.getItem(itemId);
     doc.completed = true;
 
@@ -58,9 +59,11 @@ class BottlesDao {
 
   async getItem(itemId) {
     debug("Getting an item from the database");
-    const { resource } = await this.container.item(itemId, itemId).read();
+    const {
+      resource: { origin, routes },
+    } = await this.container.item(itemId, itemId).read();
 
-    return resource;
+    return { origin, routes };
   }
 }
 
