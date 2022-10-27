@@ -15,4 +15,6 @@ jobs:
       - name: Format
         run: npm run format:check
       - name: Test
+        env:
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
         run: npm test
