@@ -14,8 +14,9 @@ async function getNearbyBottles(location) {
 }
 
 async function getAllBottles() {
+  // TODO fix query
   const res = await bottlesDao.find({
-    query: "SELECT * FROM [bottles.id, bottles.routes]",
+    query: "SELECT * FROM bottles.id",
   });
   return res;
 }
