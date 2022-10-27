@@ -1,8 +1,6 @@
 // @ts-check
 const debug = require("debug")("todo:bottlesDao");
 
-// For simplicity we'll set a constant partition key
-const partitionKey = { kind: "Hash", paths: ["/id"] };
 class BottlesDao {
   constructor(cosmosClient, databaseId, containerId) {
     this.client = cosmosClient;
