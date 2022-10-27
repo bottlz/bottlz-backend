@@ -3,8 +3,14 @@ const router = express.Router();
 
 const { bottlesDao } = require("../dbConfig");
 
-// eslint-disable-next-line no-unused-vars
-router.get("/:id", async function (req, res, next) {
+router.get("/", async function (req, res) {
+  const bottles = await bottlesDao.find({
+    query: "SELECT * FROM bottles.id",
+  });
+  res.send(bottles);
+});
+
+router.get("/:id", async function (req, res) {
   const bottle = await bottlesDao.getItem(req.params.id);
   res.send(bottle);
 });
