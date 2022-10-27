@@ -3,61 +3,56 @@ const router = express.Router();
 
 const { bottlesDao } = require("../dbConfig");
 
-router.get("/", async function (req, res) {
-  const bottles = await bottlesDao.find({
-    query: "SELECT * FROM bottles.id",
+async function getBottle(id) {
+  const res = await bottlesDao.getItem(id);
+  return { res };
+}
+
+async function getNearbyBottles(location) {
+  // TODO implement this function using geojson
+  return { TODO: location };
+}
+
+async function getAllBottles() {
+  const res = await bottlesDao.find({
+    query: "SELECT * FROM [bottles.id, bottles.routes]",
   });
-  res.send(bottles);
+  return res;
+}
+
+async function createBottle(location) {
+  // TODO replace with geojson
+  const { id } = await bottlesDao.addItem({
+    origin: new Location(location).dao(),
+  });
+  // TODO call routes function
+  return { id };
+}
+
+router.get("/", async function (req, res) {
+  const response = await getAllBottles();
+  res.send(response);
 });
 
 router.get("/:id", async function (req, res) {
-  const bottle = await bottlesDao.getItem(req.params.id);
+  const bottle = await getBottle(req.params.id);
   res.send(bottle);
 });
 
+router.get("/:id/view", async function (req, res) {
+  // TODO view image from blob store
+  const response = await getBottle(req.params.id);
+  res.send(response);
+});
+
+router.post("/", async function (req, res) {
+  const response = await createBottle(req.body.location);
+  res.send(response);
+});
+
+router.post("/nearby", async function (req, res) {
+  const response = await getNearbyBottles(req.body.location);
+  res.send(response);
+});
+
 module.exports = router;
-
-/*
-class GetBottles {
-  constructor(bottlesDao) {
-    this.bottlesDao = bottlesDao;
-  }
-  async showTasks(req, res) {
-    const querySpec = {
-      query: "SELECT * FROM root r WHERE r.completed=@completed",
-      parameters: [
-        {
-          name: "@completed",
-          value: false,
-        },
-      ],
-    };
-
-    const items = await this.taskDao.find(querySpec);
-    res.render("index", {
-      title: "My ToDo List ",
-      tasks: items,
-    });
-  }
-
-  async addTask(req, res) {
-    const item = req.body;
-
-    await this.taskDao.addItem(item);
-    res.redirect("/");
-  }
-
-  async completeTask(req, res) {
-    const completedTasks = Object.keys(req.body);
-    const tasks = [];
-
-    completedTasks.forEach((task) => {
-      tasks.push(this.taskDao.updateItem(task));
-    });
-
-    await Promise.all(tasks);
-
-    res.redirect("/");
-  }
-}
-*/
