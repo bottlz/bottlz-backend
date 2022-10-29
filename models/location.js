@@ -1,6 +1,4 @@
-var GeoPoint = require("geopoint");
-
-const NEARBY_DIFF_KM = 10;
+const GeoJSON = require("geojson");
 
 class Location {
   constructor(location) {
@@ -8,25 +6,18 @@ class Location {
   }
 
   set(location) {
+    if (!location) {
+      throw new Error("undefined location");
+    }
     const { lat, lon } = location;
     if (!lat || !lon) {
       throw new Error("malformed location");
     }
-    this.geopoint = new GeoPoint(lat, lon);
-  }
-
-  nearby(geopoint) {
-    if (!this.geopoint) {
-      throw new Error("location is not defined");
-    }
-    return this.geopoint.distanceTo(geopoint, true) < NEARBY_DIFF_KM;
+    this.location = new GeoJSON.parse(location, { Point: ["lat", "lon"] });
   }
 
   get() {
-    return {
-      latitude: this.geopoint.latitude() ?? -1,
-      longitude: this.geopoint.longitude() ?? -1,
-    };
+    return this.location.geometry;
   }
 }
 

@@ -1,6 +1,13 @@
 // @ts-check
 const debug = require("debug")("todo:bottlesDao");
 
+const mapBottle = ({ id, created, origin, routes }) => ({
+  id,
+  created,
+  origin,
+  routes,
+});
+
 class BottlesDao {
   constructor(cosmosClient, databaseId, containerId) {
     this.client = cosmosClient;
@@ -31,10 +38,11 @@ class BottlesDao {
     if (!this.container) {
       throw new Error("Collection is not initialized.");
     }
-    const { resources } = await this.container.items
+    const items = await this.container.items
       .query(querySpec)
-      .fetchAll();
-    return resources;
+      .fetchAll()
+      .then(({ resources }) => resources.map(mapBottle));
+    return items ?? [];
   }
 
   async addItem(item) {
@@ -49,8 +57,6 @@ class BottlesDao {
   async updateItem(itemId) {
     debug("Updating an item in the database");
     const doc = await this.getItem(itemId);
-    doc.completed = true;
-
     const { resource: replaced } = await this.container
       .item(itemId, itemId)
       .replace(doc);
@@ -59,11 +65,20 @@ class BottlesDao {
 
   async getItem(itemId) {
     debug("Getting an item from the database");
-    const {
-      resource: { origin, routes },
-    } = await this.container.item(itemId, itemId).read();
+    const item = await this.container
+      .item(itemId, itemId)
+      .read()
+      .then(({ resource }) => mapBottle(resource));
+    return item;
+  }
 
-    return { origin, routes };
+  async getAllItems() {
+    debug("Getting all items from the database");
+    const items = await this.container.items
+      .readAll()
+      .fetchAll()
+      .then(({ resources }) => resources.map(mapBottle));
+    return items ?? [];
   }
 }
 
