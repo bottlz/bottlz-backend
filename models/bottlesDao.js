@@ -2,11 +2,12 @@
 const debug = require("debug")("todo:bottlesDao");
 
 const mapBottle = (bottle) => {
-  const { id, created, origin, routes } = bottle ?? {};
+  const { id, created, origin, endpoint, routes } = bottle ?? {};
   return {
     id,
     created,
     origin,
+    endpoint,
     routes,
   };
 };

@@ -10,7 +10,7 @@ class Location {
       throw new Error("undefined location");
     }
     const { lat, lon } = location;
-    if (!lat || !lon) {
+    if (lat === undefined || lon === undefined) {
       throw new Error("malformed location");
     }
     this.location = new GeoJSON.parse(location, { Point: ["lat", "lon"] });
