@@ -1,12 +1,15 @@
 // @ts-check
 const debug = require("debug")("todo:bottlesDao");
 
-const mapBottle = ({ id, created, origin, routes }) => ({
-  id,
-  created,
-  origin,
-  routes,
-});
+const mapBottle = (bottle) => {
+  const { id, created, origin, routes } = bottle ?? {};
+  return {
+    id,
+    created,
+    origin,
+    routes,
+  };
+};
 
 class BottlesDao {
   constructor(cosmosClient, databaseId, containerId) {
@@ -48,10 +51,10 @@ class BottlesDao {
   async addItem(item) {
     debug("Adding an item to the database");
     item.created = Date.now();
-    const {
-      resource: { id, origin, routes },
-    } = await this.container.items.create(item);
-    return { id, origin, routes };
+    const added = await this.container.items
+      .create(item)
+      .then(({ resource }) => mapBottle(resource));
+    return added;
   }
 
   async updateItem(itemId) {

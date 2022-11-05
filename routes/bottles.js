@@ -32,25 +32,41 @@ async function createBottle(location) {
   return { id };
 }
 
-router.get("/", async function (req, res) {
+router.get("/all", async function (req, res) {
   const response = await getAllBottles();
   res.send(response);
 });
 
-router.get("/:id", async function (req, res) {
+router.get("/get/:id", async function (req, res) {
   const response = await getBottle(req.params.id);
-  res.send(response);
+  if (response.id) {
+    res.send(response);
+  } else {
+    res
+      .status(404)
+      .send({ error: `bottle not found with id: ${req.params.id}` });
+  }
 });
 
-router.get("/:id/view", async function (req, res) {
+router.get("/view/:id", async function (req, res) {
   // TODO view image from blob store
   const response = await getBottle(req.params.id);
-  res.send(response);
+  if (response.id) {
+    res.send(response);
+  } else {
+    res
+      .status(404)
+      .send({ error: `bottle not found with id: ${req.params.id}` });
+  }
 });
 
 router.post("/create", async function (req, res) {
   const response = await createBottle(req.body.location);
-  res.send(response);
+  if (response.id) {
+    res.status(202).send(response);
+  } else {
+    res.status(500).send({ error: `bottle not created` });
+  }
 });
 
 router.post("/nearby", async function (req, res) {
