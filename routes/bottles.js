@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
 
 const { bottlesDao } = require("../dbConfig");
 
 const Location = require("../models/location");
 
+const ROUTE_FUNCTION_URL =
+  "https://route-function.azurewebsites.net/api/route-function";
 const NEARBY_KM = 3000;
 
 async function getBottle(id) {
@@ -25,11 +28,13 @@ async function getAllBottles() {
 }
 
 async function createBottle(location) {
-  const { id } = await bottlesDao.addItem({
-    origin: new Location(location).get(),
+  const geopoint = new Location(location).get();
+  const response = await bottlesDao.addItem({
+    origin: geopoint,
+    endpoint: geopoint,
+    routes: [],
   });
-  // TODO call routes function
-  return { id };
+  return response;
 }
 
 router.get("/all", async function (req, res) {
@@ -62,11 +67,29 @@ router.get("/view/:id", async function (req, res) {
 
 router.post("/create", async function (req, res) {
   const response = await createBottle(req.body.location);
-  if (response.id) {
-    res.status(202).send(response);
-  } else {
+  const { id } = response;
+  if (id === undefined) {
     res.status(500).send({ error: `bottle not created` });
   }
+  axios
+    .post(ROUTE_FUNCTION_URL, response)
+    .then(({ status: routesStatus }) => {
+      console.log(routesStatus);
+      if (routesStatus === 200) {
+        res.send(response);
+      } else {
+        res.status(500).send({
+          id,
+          error: `bottle routes not initialized, status code: ${routesStatus}`,
+        });
+      }
+      return response;
+    })
+    .catch(() => {
+      res
+        .status(500)
+        .send({ id, error: `bottle routes not initialized, request error` });
+    });
 });
 
 router.post("/nearby", async function (req, res) {
