@@ -22,19 +22,27 @@ class BottlesDao {
     this.container = null;
   }
 
-  async init() {
+  async setupDatabase() {
     debug("Setting up the database...");
     const dbResponse = await this.client.databases.createIfNotExists({
       id: this.databaseId,
     });
     this.database = dbResponse.database;
     debug("Setting up the database...done!");
+  }
+
+  async setupContainer() {
     debug("Setting up the container...");
     const coResponse = await this.database.containers.createIfNotExists({
       id: this.collectionId,
     });
     this.container = coResponse.container;
     debug("Setting up the container...done!");
+  }
+
+  async init() {
+    await this.setupDatabase();
+    await this.setupContainer();
   }
 
   async find(querySpec) {
@@ -83,6 +91,12 @@ class BottlesDao {
       .fetchAll()
       .then(({ resources }) => resources.map(mapBottle));
     return items ?? [];
+  }
+
+  async deleteAllItems() {
+    debug("Deleting all items from the database");
+    await this.container.delete();
+    await this.setupContainer();
   }
 }
 

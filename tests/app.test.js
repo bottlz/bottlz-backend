@@ -11,12 +11,13 @@ describe("sanity check", () => {
 
 describe("/bottles requests", () => {
   test.each`
-    path         | method         | expected
-    ${"/"}       | ${request.get} | ${404}
-    ${"/get"}    | ${request.get} | ${404}
-    ${"/view"}   | ${request.get} | ${404}
-    ${"/create"} | ${request.get} | ${404}
-    ${"/nearby"} | ${request.get} | ${404}
+    path            | method         | expected
+    ${"/"}          | ${request.get} | ${404}
+    ${"/get"}       | ${request.get} | ${404}
+    ${"/view"}      | ${request.get} | ${404}
+    ${"/create"}    | ${request.get} | ${404}
+    ${"/nearby"}    | ${request.get} | ${404}
+    ${"/deleteAll"} | ${request.get} | ${404}
   `("bad paths", async ({ path, method, expected }) => {
     const response = await method(`/bottles${path}`);
     expect(response.status).toBe(expected);

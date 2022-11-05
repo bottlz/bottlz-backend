@@ -35,7 +35,11 @@ async function createBottle(location) {
   return response;
 }
 
-router.get("/all", async function (req, res) {
+async function deleteAllBottles() {
+  await bottlesDao.deleteAllItems();
+}
+
+router.get("/getAll", async function (req, res) {
   const response = await getAllBottles();
   res.send(response);
 });
@@ -123,6 +127,17 @@ router.post("/nearby", async function (req, res) {
     res
       .status(500)
       .send({ error: `could not get nearby bottles, ${error.message}` });
+  }
+});
+
+router.post("/deleteAll", async function (req, res) {
+  try {
+    await deleteAllBottles();
+    res.send();
+  } catch (error) {
+    res
+      .status(500)
+      .send({ error: `could not delete all bottles, ${error.message}` });
   }
 });
 
