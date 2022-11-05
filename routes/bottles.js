@@ -32,17 +32,17 @@ async function createBottle(location) {
   return { id };
 }
 
-router.get("/", async function (req, res) {
+router.get("/all", async function (req, res) {
   const response = await getAllBottles();
   res.send(response);
 });
 
-router.get("/:id", async function (req, res) {
+router.get("/get/:id", async function (req, res) {
   const response = await getBottle(req.params.id);
   res.send(response);
 });
 
-router.get("/:id/view", async function (req, res) {
+router.get("/view/:id", async function (req, res) {
   // TODO view image from blob store
   const response = await getBottle(req.params.id);
   res.send(response);
