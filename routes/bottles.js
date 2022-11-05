@@ -16,10 +16,9 @@ async function getBottle(id) {
 }
 
 async function getNearbyBottles(location) {
-  const userLocation = new Location(location).get();
   const bottles = await bottlesDao.find(`SELECT * FROM bottles b
-  WHERE ST_DISTANCE(b.origin, ${JSON.stringify(userLocation)}) < ${NEARBY_KM}`);
-  return { location: userLocation, bottles };
+  WHERE ST_DISTANCE(b.origin, ${JSON.stringify(location)}) < ${NEARBY_KM}`);
+  return { location, bottles };
 }
 
 async function getAllBottles() {
@@ -28,10 +27,9 @@ async function getAllBottles() {
 }
 
 async function createBottle(location) {
-  const geopoint = new Location(location).get();
   const response = await bottlesDao.addItem({
-    origin: geopoint,
-    endpoint: geopoint,
+    origin: location,
+    endpoint: location,
     routes: [],
   });
   return response;
@@ -66,24 +64,39 @@ router.get("/view/:id", async function (req, res) {
 });
 
 router.post("/create", async function (req, res) {
-  const response = await createBottle(req.body.location);
+  // parse location input
+  let geopoint;
+  try {
+    geopoint = new Location(req.body.location).get();
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ error: `bottle not created, ${error.message}` });
+  }
+  // create bottle in database
+  let response;
+  try {
+    response = await createBottle(geopoint);
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ error: `bottle not created, ${error.message}` });
+  }
   const { id } = response;
   if (id === undefined) {
-    res.status(500).send({ error: `bottle not created` });
+    return res.status(500).send({ error: `bottle not created, missing id` });
   }
+  // call route function
   axios
     .post(ROUTE_FUNCTION_URL, response)
     .then(({ status: routesStatus }) => {
-      console.log(routesStatus);
       if (routesStatus === 200) {
-        res.send(response);
-      } else {
-        res.status(500).send({
-          id,
-          error: `bottle routes not initialized, status code: ${routesStatus}`,
-        });
+        return res.send(response);
       }
-      return response;
+      res.status(500).send({
+        id,
+        error: `bottle routes not initialized, status code: ${routesStatus}`,
+      });
     })
     .catch(() => {
       res
@@ -93,8 +106,24 @@ router.post("/create", async function (req, res) {
 });
 
 router.post("/nearby", async function (req, res) {
-  const response = await getNearbyBottles(req.body.location);
-  res.send(response);
+  // parse location input
+  let geopoint;
+  try {
+    geopoint = new Location(req.body.location).get();
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ error: `could not get nearby bottles, ${error.message}` });
+  }
+  // get nearby bottles from database
+  try {
+    const response = await getNearbyBottles(geopoint);
+    res.send(response);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ error: `could not get nearby bottles, ${error.message}` });
+  }
 });
 
 module.exports = router;
