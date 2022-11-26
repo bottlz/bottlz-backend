@@ -8,7 +8,6 @@ const Location = require("../models/location");
 
 const ROUTE_FUNCTION_URL =
   "https://route-function.azurewebsites.net/api/route-function";
-const ROUTE_FUNCTION_URL_DEV = "http://127.0.0.1:7071/api/route-function";
 const NEARBY_KM = 3000;
 
 async function getBottle(id) {
@@ -97,7 +96,7 @@ router.post("/create", async function (req, res) {
   }
   // call route function
   axios
-    .post(ROUTE_FUNCTION_URL_DEV, response)
+    .post(ROUTE_FUNCTION_URL, response)
     .then(({ status: routesStatus, data }) => {
       if (routesStatus === 200) {
         return res.send(data);
