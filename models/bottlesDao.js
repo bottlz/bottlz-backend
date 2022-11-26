@@ -35,9 +35,23 @@ class BottlesDao {
     debug("Setting up the container...");
     const coResponse = await this.database.containers.createIfNotExists({
       id: this.collectionId,
+      partitionKey: "/id",
     });
     this.container = coResponse.container;
     debug("Setting up the container...done!");
+    /*
+      IMPORTANT please finish container setup by adding spatial indexing
+      https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/query/geospatial-index
+      
+      "spatialIndexes": [
+          {
+              "path": "/*",
+              "types": [
+                  "Point"
+              ]
+          }
+      ],
+    */
   }
 
   async init() {
