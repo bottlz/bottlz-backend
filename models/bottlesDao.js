@@ -93,6 +93,11 @@ class BottlesDao {
     return items ?? [];
   }
 
+  async deleteItem(itemId) {
+    debug("Deleting an item from the database");
+    await this.container.item(itemId, itemId).delete();
+  }
+
   async deleteAllItems() {
     debug("Deleting all items from the database");
     await this.container.delete();

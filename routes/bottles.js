@@ -35,6 +35,10 @@ async function createBottle(location) {
   return response;
 }
 
+async function deleteBottle(id) {
+  await bottlesDao.deleteItem(id);
+}
+
 async function deleteAllBottles() {
   await bottlesDao.deleteAllItems();
 }
@@ -93,19 +97,21 @@ router.post("/create", async function (req, res) {
   // call route function
   axios
     .post(ROUTE_FUNCTION_URL, response)
-    .then(({ status: routesStatus }) => {
+    .then(({ status: routesStatus, data }) => {
       if (routesStatus === 200) {
-        return res.send(response);
+        return res.send(data);
       }
+      deleteBottle(id);
       res.status(500).send({
         id,
-        error: `bottle routes not initialized, status code: ${routesStatus}`,
+        error: `bottle not created, routes function status code: ${routesStatus}`,
       });
     })
     .catch(() => {
+      deleteBottle(id);
       res
         .status(500)
-        .send({ id, error: `bottle routes not initialized, request error` });
+        .send({ id, error: `bottle not created, routes function error` });
     });
 });
 
