@@ -18,3 +18,5 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 
 const drawingsDao = new DrawingsDao(blobServiceClient, config.containerId);
 drawingsDao.setupContainer();
+
+module.exports = { drawingsDao };

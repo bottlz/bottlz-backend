@@ -40,29 +40,34 @@ class DrawingsDao {
   }
 
   async create(name, content) {
-    const { blockBlobClient } = await this.container.uploadBlockBlob(
+    const { response } = await this.container.uploadBlockBlob(
       name,
       content,
       content.length
     );
-    return blockBlobClient;
+    return { status: response._response.status };
   }
 
   async update(name, content) {
     const blobClient = this.container.getBlobClient(name);
     const leaseClient = blobClient.getBlobLeaseClient();
     leaseClient.acquireLease();
-    blobClient.upload(content, content.length);
+    const response = await blobClient.upload(content, content.length);
     leaseClient.releaseLease();
+    return { status: response._response.status };
   }
 
   async get(name) {
     const blobClient = this.container.getBlobClient(name);
     const downloadBlockBlobResponse = await blobClient.download();
+    const status = downloadBlockBlobResponse._response.status;
+    if (status != 200) {
+      return { status };
+    }
     const downloaded = await streamToBuffer(
       downloadBlockBlobResponse.readableStreamBody
     );
-    return downloaded.toString();
+    return { status, drawing: downloaded };
   }
 }
 

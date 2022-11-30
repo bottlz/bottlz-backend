@@ -59,18 +59,6 @@ router.get("/get/:id", async function (req, res) {
   }
 });
 
-router.get("/view/:id", async function (req, res) {
-  // TODO view image from blob store
-  const response = await getBottle(req.params.id);
-  if (response.id) {
-    res.send(response);
-  } else {
-    res
-      .status(404)
-      .send({ error: `bottle not found with id: ${req.params.id}` });
-  }
-});
-
 router.post("/create", async function (req, res) {
   // parse location input
   let geopoint;
