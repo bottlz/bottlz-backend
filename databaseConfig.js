@@ -11,6 +11,8 @@ config.dbKey = process.env.COSMOS_DB_KEY;
 config.databaseId = "bottles";
 config.containerId = "bottles-container1";
 
+if (!config.dbKey) throw Error("Azure Cosmos DB key not found");
+
 // set up database
 const cosmosClient = new CosmosClient({
   endpoint: config.dbHost,

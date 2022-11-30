@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-const { bottlesDao } = require("../dbConfig");
+const { bottlesDao } = require("../databaseConfig");
 
 const Location = require("../models/location");
 
