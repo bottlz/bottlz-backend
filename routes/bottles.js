@@ -8,7 +8,7 @@ const Location = require("../models/location");
 
 const ROUTE_FUNCTION_URL =
   "https://route-function.azurewebsites.net/api/route-function";
-const NEARBY_KM = 3000;
+const NEARBY_KM = 10;
 
 async function getBottle(id) {
   const res = await bottlesDao.getItem(id);

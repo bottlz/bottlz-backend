@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const CosmosClient = require("@azure/cosmos").CosmosClient;
-const BottlesDao = require("./models/bottlesDao");
+const BottlesDao = require("./database/bottlesDao");
 
 const config = {};
 

@@ -1,47 +1,50 @@
 const express = require("express");
 const router = express.Router();
 
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
+
 const { drawingsDao } = require("../storageConfig");
 
-const Drawing = require("../models/drawing");
+// const Drawing = require("../models/drawing");
 
 async function createDrawing(id, content) {
-  return await drawingsDao.create(
-    id,
-    Buffer.from(content.toString("binary"), "base64")
-  );
+  return await drawingsDao.create(id, content);
 }
 
 async function updateDrawing(id, content) {
-  return await drawingsDao.update(
-    id,
-    Buffer.from(content.toString("binary"), "base64")
-  );
+  return await drawingsDao.update(id, content);
 }
 
 async function viewDrawing(id) {
   return await drawingsDao.get(id);
 }
 
-router.post("/create/:id", async function (req, res) {
-  const { status } = await createDrawing(req.params.id, req.body);
+router.post("/create/:id", upload.single("drawing"), async function (req, res) {
+  if (!req.file?.buffer) {
+    return res.status(400).send({ error: "invalid drawing input" });
+  }
+  const { status, error } = await createDrawing(req.params.id, req.file.buffer);
   if (status == 201) {
     res.status(status).send({ id: req.params.id });
   } else {
-    res
-      .status(status)
-      .send({ error: `drawing not created with id: ${req.params.id}` });
+    res.status(status).send({
+      error: error ?? `drawing not created with id: ${req.params.id}`,
+    });
   }
 });
 
-router.post("/update/:id", async function (req, res) {
-  const { status } = await updateDrawing(req.params.id, req.body);
+router.post("/update/:id", upload.single("drawing"), async function (req, res) {
+  if (!req.file?.buffer) {
+    return res.status(400).send({ error: "invalid drawing input" });
+  }
+  const { status } = await updateDrawing(req.params.id, req.file.buffer);
   if (status == 201) {
     res.status(status).send({ id: req.params.id });
   } else {
     res
       .status(status)
-      .send({ error: `drawing not created with id: ${req.params.id}` });
+      .send({ error: `drawing not updated with id: ${req.params.id}` });
   }
 });
 

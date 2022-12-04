@@ -40,6 +40,10 @@ class DrawingsDao {
   }
 
   async create(name, content) {
+    const exists = await this.container.getBlockBlobClient(name).exists();
+    if (exists) {
+      return { status: 400, error: `blob with name ${name} already exists` };
+    }
     const { response } = await this.container.uploadBlockBlob(
       name,
       content,
@@ -49,10 +53,27 @@ class DrawingsDao {
   }
 
   async update(name, content) {
-    const blobClient = this.container.getBlobClient(name);
+    const blobClient = this.container.getBlockBlobClient(name);
     const leaseClient = blobClient.getBlobLeaseClient();
-    leaseClient.acquireLease();
-    const response = await blobClient.upload(content, content.length);
+    const { leaseId } = await leaseClient.acquireLease(15);
+    const options = {
+      conditions: { leaseId },
+    };
+    const response = await blobClient.upload(content, content.length, options);
+    // const blockId = Buffer.from("drawing").toString("base64");
+    // const stageResponse = await blobClient.stageBlock(
+    //   blockId,
+    //   content,
+    //   content.length,
+    //   options
+    // );
+    // if (stageResponse._response.status != 201) {
+    //   return {
+    //     status: stageResponse._response.status,
+    //     error: "could not stage block",
+    //   };
+    // }
+    // const response = await blobClient.commitBlockList([blockId], options);
     leaseClient.releaseLease();
     return { status: response._response.status };
   }

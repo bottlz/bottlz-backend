@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const { BlobServiceClient } = require("@azure/storage-blob");
-const DrawingsDao = require("./models/drawingsDao");
+const DrawingsDao = require("./database/drawingsDao");
 
 const config = {};
 
