@@ -6,8 +6,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const { drawingsDao } = require("../storageConfig");
 
-// const Drawing = require("../models/drawing");
-
 async function createDrawing(id, content) {
   return await drawingsDao.create(id, content);
 }
@@ -16,7 +14,7 @@ async function updateDrawing(id, content) {
   return await drawingsDao.update(id, content);
 }
 
-async function viewDrawing(id) {
+async function getDrawing(id) {
   return await drawingsDao.get(id);
 }
 
@@ -48,8 +46,8 @@ router.post("/update/:id", upload.single("drawing"), async function (req, res) {
   }
 });
 
-router.get("/view/:id", async function (req, res) {
-  const { status, drawing } = await viewDrawing(req.params.id);
+router.get("/get/:id", async function (req, res) {
+  const { status, drawing } = await getDrawing(req.params.id);
   if (status == 200) {
     res.send(drawing);
   } else {
