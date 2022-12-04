@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-const { bottlesDao } = require("../dbConfig");
+const { bottlesDao } = require("../databaseConfig");
 
 const Location = require("../models/location");
 
 const ROUTE_FUNCTION_URL =
   "https://route-function.azurewebsites.net/api/route-function";
-const NEARBY_KM = 3000;
+const NEARBY_KM = 10;
 
 async function getBottle(id) {
   const res = await bottlesDao.getItem(id);
@@ -49,18 +49,6 @@ router.get("/getAll", async function (req, res) {
 });
 
 router.get("/get/:id", async function (req, res) {
-  const response = await getBottle(req.params.id);
-  if (response.id) {
-    res.send(response);
-  } else {
-    res
-      .status(404)
-      .send({ error: `bottle not found with id: ${req.params.id}` });
-  }
-});
-
-router.get("/view/:id", async function (req, res) {
-  // TODO view image from blob store
   const response = await getBottle(req.params.id);
   if (response.id) {
     res.send(response);

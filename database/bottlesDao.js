@@ -1,5 +1,4 @@
-// @ts-check
-const debug = require("debug")("todo:bottlesDao");
+const debug = require("debug")("bottlesDao");
 
 const mapBottle = (bottle) => {
   const { id, created, origin, endpoint, routes } = bottle ?? {};
