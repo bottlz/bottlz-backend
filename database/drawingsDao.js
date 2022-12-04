@@ -1,13 +1,5 @@
 const debug = require("debug")("bottlesDao");
 
-const { BlobServiceClient } = require("@azure/storage-blob");
-require("dotenv").config();
-
-const connString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-if (!connString) throw Error("Azure Storage Connection string not found");
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(connString);
-
 async function streamToBuffer(readableStream) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -23,7 +15,7 @@ async function streamToBuffer(readableStream) {
 
 class DrawingsDao {
   constructor(blobServiceClient, containerId) {
-    this.client = blobServiceClient;
+    this.blobServiceClient = blobServiceClient;
     this.containerId = containerId;
 
     this.container = null;
@@ -31,7 +23,9 @@ class DrawingsDao {
 
   async setupContainer() {
     debug("Setting up the container...");
-    this.container = blobServiceClient.getContainerClient(this.containerId);
+    this.container = this.blobServiceClient.getContainerClient(
+      this.containerId
+    );
     debug("Setting up the container...done!");
   }
 
