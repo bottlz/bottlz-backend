@@ -4,10 +4,14 @@ const axios = require("axios");
 
 require("dotenv").config();
 const { WebPubSubServiceClient } = require("@azure/web-pubsub");
-const serviceClient = new WebPubSubServiceClient(
-  process.env.WEB_PUBSUB_CONNECTION_STRING,
-  "bottlzHub"
-);
+
+let serviceClient;
+if (process.env.WEB_PUBSUB_CONNECTION_STRING) {
+  serviceClient = new WebPubSubServiceClient(
+    process.env.WEB_PUBSUB_CONNECTION_STRING,
+    "bottlzHub"
+  );
+}
 
 const { bottlesDao } = require("../databaseConfig");
 
@@ -143,6 +147,9 @@ router.post("/deleteAll", async function (req, res) {
 });
 
 router.get("/token", async function (req, res) {
+  if (!serviceClient) {
+    return res.status(500).send({ error: "serviceClient is undefined" });
+  }
   const { url } = await serviceClient.getClientAccessToken();
   res.send({ url });
 });
