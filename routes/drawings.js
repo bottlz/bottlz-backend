@@ -49,6 +49,7 @@ router.post("/update/:id", upload.single("drawing"), async function (req, res) {
 router.get("/get/:id", async function (req, res) {
   const { status, drawing } = await getDrawing(req.params.id);
   if (status == 200) {
+    res.setHeader("content-type", "image/png");
     res.send(drawing);
   } else {
     res
