@@ -48,6 +48,11 @@ class DrawingsDao {
 
   async update(name, content) {
     const blobClient = this.container.getBlockBlobClient(name);
+    const exists = await blobClient.exists();
+    if (!exists) {
+      const { status } = await this.create(name, content);
+      return { status, message: `created new blob with name ${name}` };
+    }
     const leaseClient = blobClient.getBlobLeaseClient();
     const { leaseId } = await leaseClient.acquireLease(15);
     const options = {
