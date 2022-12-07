@@ -52,11 +52,9 @@ router.get("/get/:id", async function (req, res) {
     res.setHeader("content-type", "image/png");
     res.send(drawing);
   } else {
-    res
-      .status(status)
-      .send({
-        error: error ?? `could not get drawing with id: ${req.params.id}`,
-      });
+    res.status(status).send({
+      error: error ?? `could not get drawing with id: ${req.params.id}`,
+    });
   }
 });
 
