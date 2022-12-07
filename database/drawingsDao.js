@@ -73,11 +73,15 @@ class DrawingsDao {
   }
 
   async get(name) {
-    const blobClient = this.container.getBlobClient(name);
+    const blobClient = this.container.getBlockBlobClient(name);
+    const exists = await blobClient.exists();
+    if (!exists) {
+      return { status: 404, error: `blob with name ${name} doesn't exist` };
+    }
     const downloadBlockBlobResponse = await blobClient.download();
     const status = downloadBlockBlobResponse._response.status;
     if (status != 200) {
-      return { status };
+      return { status, error: "error downloading blob" };
     }
     const downloaded = await streamToBuffer(
       downloadBlockBlobResponse.readableStreamBody

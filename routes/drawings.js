@@ -36,25 +36,27 @@ router.post("/update/:id", upload.single("drawing"), async function (req, res) {
   if (!req.file?.buffer) {
     return res.status(400).send({ error: "invalid drawing input" });
   }
-  const { status } = await updateDrawing(req.params.id, req.file.buffer);
+  const { status, error } = await updateDrawing(req.params.id, req.file.buffer);
   if (status == 201) {
     res.status(status).send({ id: req.params.id });
   } else {
-    res
-      .status(status)
-      .send({ error: `drawing not updated with id: ${req.params.id}` });
+    res.status(status).send({
+      error: error ?? `drawing not updated with id: ${req.params.id}`,
+    });
   }
 });
 
 router.get("/get/:id", async function (req, res) {
-  const { status, drawing } = await getDrawing(req.params.id);
+  const { status, error, drawing } = await getDrawing(req.params.id);
   if (status == 200) {
     res.setHeader("content-type", "image/png");
     res.send(drawing);
   } else {
     res
       .status(status)
-      .send({ error: `drawing not found with id: ${req.params.id}` });
+      .send({
+        error: error ?? `could not get drawing with id: ${req.params.id}`,
+      });
   }
 });
 
