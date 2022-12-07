@@ -2,6 +2,13 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
+require("dotenv").config();
+const { WebPubSubServiceClient } = require("@azure/web-pubsub");
+const serviceClient = new WebPubSubServiceClient(
+  process.env.WEB_PUBSUB_CONNECTION_STRING,
+  "bottlzHub"
+);
+
 const { bottlesDao } = require("../databaseConfig");
 
 const Location = require("../models/location");
@@ -133,6 +140,11 @@ router.post("/deleteAll", async function (req, res) {
       .status(500)
       .send({ error: `could not delete all bottles, ${error.message}` });
   }
+});
+
+router.get("/token", async function (req, res) {
+  const { url } = await serviceClient.getClientAccessToken();
+  res.send({ url });
 });
 
 module.exports = router;
