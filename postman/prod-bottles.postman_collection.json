@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "2dd6878c-488c-46f1-838e-567ca2dd1bb4",
+		"name": "prod/bottles",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": {\n        \"lat\": 40.7128,\n        \"lon\": -74.0060\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bottlz.azurewebsites.net/bottles/create",
+					"protocol": "https",
+					"host": [
+						"bottlz",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"bottles",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://bottlz.azurewebsites.net/bottles/get/:id",
+					"protocol": "https",
+					"host": [
+						"bottlz",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"bottles",
+						"get",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nearby",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": {\n        \"lat\": 42.446,\n        \"lon\": -76.482\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bottlz.azurewebsites.net/bottles/nearby",
+					"protocol": "https",
+					"host": [
+						"bottlz",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"bottles",
+						"nearby"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAll",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bottlz.azurewebsites.net/bottles/deleteAll",
+					"protocol": "https",
+					"host": [
+						"bottlz",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"bottles",
+						"deleteAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://bottlz.azurewebsites.net/bottles/token",
+					"protocol": "https",
+					"host": [
+						"bottlz",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"bottles",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
